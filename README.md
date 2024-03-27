@@ -17,29 +17,32 @@ In addition to simplifying and unifying the authentication process, this approac
 * Node v20.x
 * Postman
 
+---
+
 ### Setup
-* #### AWS Setup
-  * Create AWS credentials that has the ability to deploy all resources in this stack.
-    Typically you want a least privilege approach, but to simplify this example create credentials with admin access so all resources can be created.
+1. #### AWS Setup
+  * Create AWS credentials that have the ability to deploy all resources in this stack.
+    Typically you want a least privilege approach, but to simplify this example, create credentials with admin access so all resources can be created.
   * Create an AWS credentials *profile* in your local `~/.aws/credentials` file. 
-    _Alternatively, use the `--profile` command line option during deploy_
+    _Alternatively, use an existing profile with the `--profile` command line option during deploy_
       ```
       [deploy.dev]
       aws_access_key_id=xxxxxxxxxxxxxxxx
       aws_secret_access_key=yyyyyyyyyyyy
       ```
-* Run the following commands
- 
-  **Note:** _The cognito details will be output to the console when the deployment completes. Those details will also be stored in the file `.cognito-details.json` for your reference._ 
-  ```shell
+2. Run the following commands
+ ```shell
   npm install
   npx sls deploy --region us-east-1
   ```
-* Create a user in your new User Pool
+
+  - **Note:** _The cognito details will be output to the console when the deployment completes. Those details will also be stored in the file `.cognito-details.json` for your reference._ 
+  
+3. Create a user in your new User Pool
     ```shell
     npx sls invoke local --function createUser --data '{"name":"User", "email": "user@email.com", "password": "MyPassword1"}'
     ```
-* Setup Postman collection & environment
+4. Setup Postman collection & environment
   * Import `postman/Cognito Identity.postman_collection.json`
   * Import `postman/Cognito Identity.postman_environment.json`
   * Set your Postman environment variables (info available in `.cognito-details.json` after deploy)
@@ -47,11 +50,13 @@ In addition to simplifying and unifying the authentication process, this approac
     * `brokerClientId` - The Broker client ID
     * `clientId1` - Client 1 Id
     * `clientId2` - Client 2 Id
+  * Turn off automatic redirects in postman. This will allow JSON responses on a GET method that returns a 302 redirect)
+    * `Settings --> General --> Headers --> Automatically follow redirects`
 ---
 
 
 # Using the Identity Broker
-The broker process is broken into 3 major parts:
+The _Authorization Code Flow_ process is broken into 3 main proceses:
 * User logs in directly with the broker
 * User's broker credentials are used to generate a code grant 
 * User exchanges the code for tokens
@@ -61,14 +66,14 @@ The postman collection has been setup to populate required variables (`code`, `r
 
 
 1. Send the `Login` request. This will:
-    * Returns the broker credentials (`id, access, refresh` tokens)
+    * Return the broker credentials (`id, access, refresh` tokens)
     * Set the tokens in cookies on the broker's Api domain.
 2. Send the `Start Client Auth Flow` request. This will:
     * Pass the user's broker credential cookies in the request.
     * Return a `code` for exchange.
 3. Send the `Exchange Code for Tokens` request. This will:
     * Return the client credentials (`id, access, refresh` tokens)
-4. User has been successfully authenticated with the consumer client.
+4. Success! The user has been successfully authenticated with the client.
 5. To refresh the client's credentials, send the `Refresh Client Tokens` request. This will:
     * Return refreshed `id` and `access` tokens.
   
@@ -77,7 +82,11 @@ The postman collection has been setup to populate required variables (`code`, `r
  ```shell
  npx sls invoke local --function generateChallenge  
  ```
-  
+
+### Other things to explore
+* **Use Client 2**.  - This client is configured w/tokens that are only valid for 1 hour. Client 1 tokens are valid for 2 hours.
+* **Use an invalid `redirectUri` when starting the auth flow** -- this will result in an error
+* **Use an invalid `codeChallenge` or `codeVerifier`** while initiating or exchanging a code for tokens.  -- this will result in an error
 ---
 
 
@@ -93,6 +102,26 @@ The postman collection has been setup to populate required variables (`code`, `r
     "password": "MyPassword1"
 }
 ```
+###### Response
+```json
+{
+    "requestId": "979b8012-a755-45ad-9cfe-43a51b0e3473",
+    "requestStartTime": "2024-03-27T19:35:36.766Z",
+    "requestEndTime": "2024-03-27T19:35:37.193Z",
+    "success": true,
+    "data": {
+        "success": true,
+        "result": "logged_in",
+        "authentication": {
+            "accessToken": "eyJraWQiOiIy...",
+            "idToken": "eyJraWQiOiJ4Zz...",
+            "refreshToken": "eyJjdHk...",
+            "expiresIn": 3600,
+            "tokenType": "Bearer"
+        }
+    }
+}
+```
 
 This allows a user to login via the Broker's clientId. This is the only client that allows user login. Attempting to use consumer client's id will result in a login failure.
 
@@ -105,6 +134,22 @@ This allows a user to login via the Broker's clientId. This is the only client t
 * `clientId` - A consumer Client Id
 * `redirectUri` - A redirectUri that is registered to the client in Cognito. (_configured in_: `serverless-cognito.yml`)
 * `codeChallenge` - (_optional_) If provided, the `codeVerifier` must be used during the exchange of code for tokens.
+
+###### Response
+```json
+{
+    "requestId": "445fffcb-ec7a-4712-a129-b9e4980d46f1",
+    "requestStartTime": "2024-03-27T19:35:53.257Z",
+    "requestEndTime": "2024-03-27T19:35:54.568Z",
+    "success": true,
+    "data": {
+        "success": true,
+        "result": "code_flow_initiated",
+        "code": "9039c5dc-c925-4407-9aea-5e857c9c4fd0",
+        "redirectUri": "http://localhost:3001?code=9039c5dc-c925-4407-9aea-5e857c9c4fd0"
+    }
+}
+```
 
 This endpoint uses the `GET` method for browser redirect support (via a `302` HTTP status code and a `location` header with the `redirectUri` populated with the code grant). Additionally it will return a JSON response for non-web clients.
 
@@ -127,6 +172,28 @@ This endpoint uses the `GET` method for browser redirect support (via a `302` HT
 * `code` - The code returned from starting the auth flow process
 * `codeVerifier` - (_optional_) If `codeChallenge` was sent during the start of the auth flow process, this is required. 
 
+###### Response
+```json
+{
+    "requestId": "979b8012-a755-45ad-9cfe-43a51b0e3473",
+    "requestStartTime": "2024-03-27T19:35:36.766Z",
+    "requestEndTime": "2024-03-27T19:35:37.193Z",
+    "success": true,
+    "data": {
+        "success": true,
+        "result": "logged_in",
+        "authentication": {
+            "accessToken": "eyJraWQiOiIy...",
+            "idToken": "eyJraWQiOiJ4Zz...",
+            "refreshToken": "eyJjdHk...",
+            "expiresIn": 3600,
+            "tokenType": "Bearer"
+        }
+    }
+}
+```
+
+
 ### Refresh Client Tokens - `POST /auth/client/token`
 
 ###### Body
@@ -140,6 +207,26 @@ This endpoint uses the `GET` method for browser redirect support (via a `302` HT
 * `clientId` - A consumer Client Id
 * `refreshToken` - A valid/non-expired consumer client refresh token
 
+##### Response
+```json
+{
+    "requestId": "47a775d7-d8ca-48eb-9563-c662b5900407",
+    "requestStartTime": "2024-03-27T19:36:47.044Z",
+    "requestEndTime": "2024-03-27T19:36:47.261Z",
+    "success": true,
+    "data": {
+        "success": true,
+        "result": "refreshed",
+        "authentication": {
+            "accessToken": "eyJraWQiOiIyc1V...",
+            "idToken": "eyJraWQiOiJ4ZzlHMVdlW...",
+            "expiresIn": 7200,
+            "tokenType": "Bearer"
+        }
+    }
+}
+```
+
 This allows the consumer client application to request new `id` and `access` tokens from the broker. A new refresh token will not be returned. The only way to get a new refresh token is to use the `authorization_code` grant type.
 
 ---
@@ -150,8 +237,3 @@ This allows the consumer client application to request new `id` and `access` tok
   ```shell
   npx sls remove
   ```
-
-
-TODO:  Create a post-deploy script that outputs: (to screen + .cognito_env file)
-- Api URL
-- Each Client Id
