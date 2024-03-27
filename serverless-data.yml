@@ -1,3 +1,10 @@
+############################################################################################################
+#  This includes all DynamoDb resources
+#
+#  Grants Table - This table stores all code grants on a ttl. If a code grant is not retrieved before
+#  expiration, they will be automatically removed.
+#
+############################################################################################################
 Resources:
 
   GrantsTable:
@@ -8,7 +15,6 @@ Resources:
       AttributeDefinitions:
         - AttributeName: code
           AttributeType: S
-      #DeletionProtectionEnabled: true
       GlobalSecondaryIndexes:
       KeySchema:
         - KeyType: HASH
@@ -18,8 +24,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-#      StreamSpecification:
-#        StreamViewType: NEW_AND_OLD_IMAGES
       TableName: grants
       TimeToLiveSpecification:
         AttributeName: ttl

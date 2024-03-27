@@ -1,3 +1,6 @@
+/**
+ * Used to configure dynalite in jest 
+ */
 module.exports = {
   "tables": [
     {

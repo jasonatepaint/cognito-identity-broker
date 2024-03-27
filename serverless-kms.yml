@@ -1,3 +1,9 @@
+############################################################################################################
+#  This includes all KMS resources
+#
+#  This encryption key is used to encrypt/decrypt temporary code grants (access, id, refresh tokens)
+#
+############################################################################################################
 Resources:
   CognitoEncryptionKey:
     Type: AWS::KMS::Key

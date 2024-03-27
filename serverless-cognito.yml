@@ -1,3 +1,13 @@
+############################################################################################################
+#  This includes all Cognito resources
+#
+#  In addition to the User Pool, there are 3 user pool clients
+#   * Cognito Identity Broker - This client allows user login w/username and password
+#   * These clients can only authenticate via the authorzation code flow process
+#     * Client 1 - This client's id/access tokens are valid for 2 hours
+#     * Client 2 - This clients id/access tokens are valid for 1 hour
+#
+############################################################################################################
 Resources:
 
   CognitoUserPool:
