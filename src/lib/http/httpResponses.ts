@@ -26,7 +26,7 @@ export type HttpResponse<T> = ReturnType<typeof buildBaseResponse> & { data?: T 
 
 export const buildHttpResponse = <T = any>(httpContext: HttpContext, statusCode: number, data: T, headers = {}) : APIGatewayProxyResult => {
 	let body = "";
-	let encoding: BufferEncoding = "utf-8";
+	const encoding: BufferEncoding = "utf-8";
 
 	const baseResponse: HttpResponse<T> = buildBaseResponse(httpContext);
 	if (data) {

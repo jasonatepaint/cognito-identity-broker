@@ -16,7 +16,6 @@ import {
 	LoginParameters,
 	UserLoginResponse,
 } from "../models/login";
-import {DataService} from "../data";
 import {CognitoClient} from "../cognito";
 import {AuthConstants} from "./index";
 import {formatTokenResponse} from "../cognito/utils";

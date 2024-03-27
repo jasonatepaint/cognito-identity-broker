@@ -1,9 +1,5 @@
 import {
 	CognitoIdentityProviderClient,
-	AdminCreateUserCommand,
-	AdminGetUserCommand,
-	AdminSetUserPasswordCommand,
-	AdminCreateUserCommandInput,
 	AdminInitiateAuthCommand,
 	AdminRespondToAuthChallengeCommand,
 	AdminInitiateAuthCommandOutput,
