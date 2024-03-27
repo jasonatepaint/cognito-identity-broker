@@ -13,9 +13,10 @@ const credentials = provider.getCredentials().credentials;
 credentials.region = region;
 
 const displayDetails = async () => {
-	const userPoolId = await getUserPoolId();
+	const { apiUrl, userPoolId} = await getUserPoolId();
 	const clients = await getClients(userPoolId);
 	const details = {
+		apiUrl,
 		userPoolId,
 		clients
 	};
@@ -30,7 +31,12 @@ const getUserPoolId = async () => {
 		StackName: service.service
 	}));
 	const stack = response.Stacks[0];
-	return stack.Outputs.find(x => x.OutputKey === "UserPoolId").OutputValue;
+	const userPoolId = stack.Outputs.find(x => x.OutputKey === "UserPoolId").OutputValue;
+	const apiUrl = stack.Outputs.find(x => x.OutputKey === "ApiGatewayRestApiUrl").OutputValue;
+	return {
+		apiUrl,
+		userPoolId
+	};
 };
 
 const getClients = async (userPoolId) => {

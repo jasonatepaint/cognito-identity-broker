@@ -6,9 +6,6 @@ environment:
   REGION: ${self:provider.region}
   GRANTS_TABLE: grants
   KMS_COGNITO_ALIAS: alias/${self:custom.cognito.kmsId}
-  COGNITO_POOL_ID: us-east-1_V94Vwe789
-#    Fn::Join:
-#      - ""
-#      - - Ref: CognitoUserPool
+  COGNITO_POOL_ID: !Ref CognitoUserPool
   COGNITO_REFRESH_TOKEN_EXPIRES_DAYS: ${self:custom.cognito.refreshTokenExpirationInDays}
 

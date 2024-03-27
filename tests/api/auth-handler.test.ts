@@ -4,7 +4,6 @@ import {
 	clientOAuth2Authorize,
 	clientOAuth2Token,
 	login,
-	refresh,
 	buildAuthCookiesHeader
 } from "../../src/api/handlers/auth-handler";
 import cookie from "cookie";
@@ -167,65 +166,6 @@ describe('Client Tokens', () => {
 	test('service exception', async () => {
 		mockAuthService.prototype.getTokensForClient.mockRejectedValue(new Error());
 		const res = await clientOAuth2Token(event, context);
-		const result = JSON.parse(<string>res.body);
-		expect(result.success).toBeFalsy();
-	});
-});
-
-describe('Refresh Token', () => {
-	beforeEach(() => {
-		req = { clientId: "1233456", refreshToken: "token" };
-		event = <APIGatewayProxyEvent>{
-			pathParameters: { },
-			body: JSON.stringify(req)
-		};
-
-		mockAuthService.prototype.refreshToken.mockClear();
-		mockAuthService.prototype.refreshToken.mockResolvedValue(<any>{
-			success: true,
-			authentication: {
-				accessToken: credentials.accessToken,
-				idToken: credentials.idToken
-			}
-		});
-	});
-
-	test('as expected', async () => {
-		const res = await refresh(event, context);
-		const result = JSON.parse(<string>res.body);
-		expect(result.success).toBeTruthy();
-		expect(result.data.success).toBeTruthy();
-
-		//Make sure cookies are there
-		let cookies = getCookies(res);
-		expect(cookies.accessToken).toEqual(credentials.accessToken);
-		expect(cookies.idToken).toEqual(credentials.idToken);
-		expect(cookies.refreshToken).toBeUndefined(); //not returned in refresh flow
-
-		expect(AuthService.prototype.refreshToken).toHaveBeenCalledTimes(1);
-		expect(AuthService.prototype.refreshToken).toHaveBeenCalledWith(req.clientId, req.refreshToken);
-	});
-
-	test('unsuccessful refresh', async () => {
-		mockAuthService.prototype.refreshToken.mockResolvedValue({ success: false });
-		const res = await refresh(event, context);
-		const result = JSON.parse(<string>res.body);
-		expect(result.success).toBeTruthy();
-		expect(result.data.success).toBeFalsy();
-
-		//no cookies should have been written
-		let cookies = getCookies(res);
-		expect(cookies.accessToken).toBeUndefined();
-		expect(cookies.idToken).toBeUndefined();
-		expect(cookies.refreshToken).toBeUndefined();
-
-		expect(AuthService.prototype.refreshToken).toHaveBeenCalledTimes(1);
-		expect(AuthService.prototype.refreshToken).toHaveBeenCalledWith(req.clientId, req.refreshToken);
-	});
-
-	test('service exception', async () => {
-		mockAuthService.prototype.refreshToken.mockRejectedValue(new Error());
-		const res = await refresh(event, context);
 		const result = JSON.parse(<string>res.body);
 		expect(result.success).toBeFalsy();
 	});

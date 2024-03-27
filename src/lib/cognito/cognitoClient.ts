@@ -26,37 +26,6 @@ export class CognitoClient {
 		this.client = new CognitoIdentityProviderClient();
 	}
 
-	async createUser(email: string, name: string, password: string) {
-		const params = <AdminCreateUserCommandInput>{
-			UserPoolId: this.userPoolId,
-			Username: email,
-			UserAttributes: [
-				{
-					"Name": "name",
-					"Value": name
-				},
-				{
-					"Name": "email",
-					"Value": email
-				}
-			],
-			DesiredDeliveryMediums: [ "EMAIL" ],
-			MessageAction: "SUPPRESS"
-		};
-		const res = await this.client.send(new AdminCreateUserCommand(params));
-
-		await this.client.send(new AdminSetUserPasswordCommand({
-			UserPoolId: this.userPoolId,
-			Username: res.User?.Username,
-			Password: password,
-			Permanent: true
-		}));
-		return await this.client.send(new AdminGetUserCommand({
-			UserPoolId: this.userPoolId,
-			Username: res.User?.Username,
-		}));
-	}
-
 	async getUserFromToken(accessToken: string): Promise<GetUserCommandOutput> {
 		return await this.client.send(new GetUserCommand({
 			AccessToken: accessToken
