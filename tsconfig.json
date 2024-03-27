@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowJs": false,
+    "baseUrl": ".",
+    "declaration": true,
+    "esModuleInterop": true,
+    "emitDeclarationOnly": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["es2022"],
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "es2022"
+  },
+  "include": ["src", "tests"],
+  "exclude": ["dist", "deploy"]
+}

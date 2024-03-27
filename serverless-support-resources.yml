@@ -1,0 +1,37 @@
+Resources:
+  NoReplyEmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: ${self:custom.cognito.replyEmail}
+
+  SnsRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: '${self:service}-${self:custom.region}-cognito-sns-role'
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - cognito-idp.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+            Condition:
+              StringEquals:
+                "sts:ExternalId": ${self:custom.cognito.stsExternalId}
+      Policies:
+        - PolicyName: "CognitoSnsPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "sns:publish"
+                Resource: "*"
+
+  IamRoleLambdaExecution:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "${self:service}-${self:custom.region}-lambda-role"
+      Description: "Execution Role for Serverless (${self:service}) Lambda functions"

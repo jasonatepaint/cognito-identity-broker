@@ -1,0 +1,7 @@
+createUser:
+  handler: setup-handler.createUser
+  description: Creates a single user in cognito
+
+generateChallenge:
+  handler: setup-handler.generateChallengeData
+  description: Creates the PKCE Key and it's matching code challenge

@@ -1,0 +1,26 @@
+Resources:
+
+  GrantsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: code
+          AttributeType: S
+      #DeletionProtectionEnabled: true
+      GlobalSecondaryIndexes:
+      KeySchema:
+        - KeyType: HASH
+          AttributeName: code
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: false
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+#      StreamSpecification:
+#        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: grants
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true

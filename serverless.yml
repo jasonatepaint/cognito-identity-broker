@@ -1,0 +1,101 @@
+service: cognito-identity-broker
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  deploymentBucket:
+    name: ${self:custom.deploymentBucket.name}
+    serverSideEncryption: AES256
+  environment: ${file(./serverless-environment.yml):environment}
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - cognito-idp:Admin*
+            - cognito-idp:InitiateAuth
+            - cognito-idp:DescribeUserPool
+            - cognito-idp:DescribeUserPoolClient
+            - cognito-idp:RespondToAuthChallenge
+          Resource:
+            - arn:aws:cognito-idp:*:*:userpool/* #TODO change to actual pool
+        - Effect: 'Allow'
+          Action:
+            - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "arn:aws:dynamodb:*:*:table/grants"
+            - "arn:aws:dynamodb:*:*:table/grants/*"
+  logRetentionInDays: 1
+  profile: ${self:custom.profile}
+  runtime: nodejs20.x
+  region: ${self:custom.region}
+  stage: ${self:custom.stage}
+  stackName: ${self:service}
+#  tags:
+#    "git:branch": ${git:branch}
+#    "git:tag": ${git:tags}
+#    "git:sha": ${git:sha1}
+  timeout: 28
+  tracing:
+    lambda: true
+
+package:
+  individually: true
+
+plugins:
+  - serverless-plugin-git-variables
+  - serverless-functions-base-path
+  - serverless-esbuild
+  - serverless-deployment-bucket
+  - serverless-prune-plugin
+  - serverless-scriptable-plugin
+  - serverless-offline
+
+custom:
+  cognito:
+    userPoolName: "the-pool"
+    stsExternalId: 'cognito-broker-sns'
+    replyEmail: "no-reply@email.com"
+    clientExplicitAuthFlows:
+      - ALLOW_REFRESH_TOKEN_AUTH
+      - ALLOW_CUSTOM_AUTH
+    kmsId: ${self:service}-cognito-key
+    refreshTokenExpirationInDays: 1
+  deploymentBucket:
+    blockPublicAccess: true
+    enabled: true
+    name: "serverless-deploy-${self:custom.stage}-${self:custom.region}"
+  esbuild:
+    config: './esbuild.config.js'
+  exportGitVariables: false
+  functionsBasePath: src/api/handlers
+  profile: ${opt:profile, "deploy.${self:custom.stage}"}
+  prune:
+    automatic: true
+    number: 1
+  region: ${opt:region, "us-east-1"}
+  scriptable:
+    hooks:
+      deploy:finalize:
+        - ./scripts/cognito-details.js
+  serverless-offline:
+    noPrependStageInUrl: true
+    noAuth: true
+    skipCacheInvalidation: true
+    noTimeout: true
+  stage: ${opt:stage, "dev"}
+
+functions:
+  - ${file(./src/api/functions/setup.yml)}
+  - ${file(./src/api/functions/auth.yml)}
+  - ${file(./src/api/functions/cognito.yml)}
+
+resources:
+  - ${file(./serverless-cognito.yml)}
+  - ${file(./serverless-data.yml)}
+  - ${file(./serverless-kms.yml)}
+  - ${file(./serverless-support-resources.yml)}

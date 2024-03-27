@@ -1,0 +1,24 @@
+# All of these AUTH endpoints will have no authorizers, as they need to be publicly accessible.
+login:
+  handler: auth-handler.login
+  description: User Login (supports Credentials and Code grantTypes)
+  events:
+    - http:
+        path: /auth/login
+        method: post
+
+clientOAuth2Authorize:
+  handler: auth-handler.clientOAuth2Authorize
+  description: Generates an oAuth2 Code Grant
+  events:
+    - http:
+        path: /auth/client/authorize
+        method: get
+
+clientOAuth2Token:
+  handler: auth-handler.clientOAuth2Token
+  description: Retrieves oAuth2 Tokens using a client Authorization Code
+  events:
+    - http:
+        path: /auth/client/token
+        method: post

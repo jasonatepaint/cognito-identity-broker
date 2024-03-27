@@ -1,0 +1,16 @@
+cognitoAuthTriggers:
+  handler: cognito-triggers-handler.cognitoAuthTriggers
+  description: Cognito Auth Challenge Triggers
+  events:
+    - cognitoUserPool:
+        pool: ${self:custom.cognito.userPoolName}
+        trigger: CreateAuthChallenge
+        existing: true
+    - cognitoUserPool:
+        pool: ${self:custom.cognito.userPoolName}
+        trigger: DefineAuthChallenge
+        existing: true
+    - cognitoUserPool:
+        pool: ${self:custom.cognito.userPoolName}
+        trigger: VerifyAuthChallengeResponse
+        existing: true

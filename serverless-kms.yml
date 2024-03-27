@@ -1,0 +1,44 @@
+Resources:
+  CognitoEncryptionKey:
+    Type: AWS::KMS::Key
+    DependsOn:
+      IamRoleLambdaExecution
+    Properties:
+      Description: >-
+        Symmetric key that encrypts cognito information
+      EnableKeyRotation: true
+      Enabled: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: ${self:custom.cognito.kmsId}
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+            Action: kms:*
+            Resource: '*'
+          - Sid: Allow Lambdas
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/${self:service}-${AWS::Region}-lambda-role"
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+            Resource: '*'
+      KeyUsage: ENCRYPT_DECRYPT
+      MultiRegion: true
+      PendingWindowInDays: 7
+
+  CognitoEncryptionKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName:
+        Fn::Sub: alias/${self:custom.cognito.kmsId}
+      TargetKeyId:
+        Ref: CognitoEncryptionKey
+
+Outputs:
+  CognitoEncryptionKeyArn:
+    Value: !GetAtt CognitoEncryptionKey.Arn

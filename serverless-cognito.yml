@@ -1,0 +1,147 @@
+Resources:
+
+  CognitoUserPool:
+    Type: 'AWS::Cognito::UserPool'
+    DependsOn:
+      - SnsRole
+    Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+          - Name: verified_phone_number
+            Priority: 2
+      AutoVerifiedAttributes:
+        - email
+      EnabledMfas:
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+        InviteMessageTemplate:
+          EmailMessage: "Your username is {username} and temporary password is {####}"
+          EmailSubject: "Your temporary password"
+          SMSMessage: "Your username is {username} and temporary password is {####}"
+      MfaConfiguration: 'OFF'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+          RequireUppercase: true
+          TemporaryPasswordValidityDays: 7
+      Schema:
+        - Name: name
+          Required: false
+          Mutable: true
+        - Name: email
+          Required: false
+          Mutable: true
+        - Name: phone_number
+          Required: false
+          Mutable: true
+      SmsConfiguration:
+        ExternalId: ${self:custom.cognito.stsExternalId}
+        SnsCallerArn: !GetAtt SnsRole.Arn
+      SmsAuthenticationMessage: 'Your authentication code is {####}'
+      UsernameConfiguration:
+        CaseSensitive: false
+      UsernameAttributes:
+        - email
+        - phone_number
+      UserPoolAddOns:
+        AdvancedSecurityMode: OFF
+      UserPoolName: ${self:custom.cognito.userPoolName}
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_CODE
+        EmailMessage: "Your verification code is {####}"
+        EmailSubject: "Your verification code"
+        SmsMessage: "Your verification code is {####}"
+
+  # This is our main client for all user login (user pool & external users).
+  # Other clients will lack the ability to login w/username & password.
+  ClientBroker:
+    Type: 'AWS::Cognito::UserPoolClient'
+    Properties:
+      ClientName: 'Cognito Identity Broker'
+      AccessTokenValidity: 1
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - phone
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - http://localhost:3000
+      EnableTokenRevocation: false
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      GenerateSecret: false
+      IdTokenValidity: 1
+      LogoutURLs:
+        - http://localhost:3000/logout
+      PreventUserExistenceErrors: ENABLED
+      RefreshTokenValidity: ${self:custom.cognito.refreshTokenExpirationInDays}
+      SupportedIdentityProviders:
+        - COGNITO
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+      UserPoolId: !Ref CognitoUserPool
+
+  ClientOne:
+    Type: 'AWS::Cognito::UserPoolClient'
+    Properties:
+      ClientName: 'Client 1'
+      AccessTokenValidity: 2
+      AllowedOAuthFlowsUserPoolClient: false
+      AllowedOAuthFlows: [ ]
+      AllowedOAuthScopes: [ ]
+      CallbackURLs:
+        - http://localhost:3001
+      ExplicitAuthFlows: ${self:custom.cognito.clientExplicitAuthFlows}
+      GenerateSecret: false
+      IdTokenValidity: 2
+      PreventUserExistenceErrors: ENABLED
+      RefreshTokenValidity: ${self:custom.cognito.refreshTokenExpirationInDays}
+      SupportedIdentityProviders: []
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+      UserPoolId: !Ref CognitoUserPool
+
+  ClientTwo:
+    Type: 'AWS::Cognito::UserPoolClient'
+    Properties:
+      ClientName: 'Client 2'
+      AccessTokenValidity: 1
+      AllowedOAuthFlowsUserPoolClient: false
+      AllowedOAuthFlows: [ ]
+      AllowedOAuthScopes: [ ]
+      CallbackURLs:
+        - http://localhost:3002
+      ExplicitAuthFlows: ${self:custom.cognito.clientExplicitAuthFlows}
+      GenerateSecret: false
+      IdTokenValidity: 1
+      PreventUserExistenceErrors: ENABLED
+      RefreshTokenValidity: ${self:custom.cognito.refreshTokenExpirationInDays}
+      SupportedIdentityProviders: []
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+      UserPoolId: !Ref CognitoUserPool
+
+Outputs:
+  UserPoolId:
+    Value: !Ref CognitoUserPool
+  UserPoolName:
+    Value: ${self:custom.cognito.userPoolName}

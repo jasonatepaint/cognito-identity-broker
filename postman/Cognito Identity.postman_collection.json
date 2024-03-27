@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "3c1fc71d-3b3f-40bb-9a7c-9f7a0d32234f",
+		"name": "Cognito Identity",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10160081"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n    \"clientId\": \"{{brokerClientId}}\", \n    \"username\": \"user@email.com\",\n    \"password\": \"MyPassword1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/auth/login",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				},
+				"description": "Logs a User in and returns a JWT collection"
+			},
+			"response": []
+		},
+		{
+			"name": "Start Client Auth Flow",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Set Code\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"code\", jsonData.data.code);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/auth/client/authorize?clientId={{clientId1}}&redirectUri={{redirectUriClient1}}&codeChallenge=xhrMObY-MOMInTN9GTR1HdzdQskQMJeU8CwxaTL0nA8",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"auth",
+						"client",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "{{clientId1}}"
+						},
+						{
+							"key": "redirectUri",
+							"value": "{{redirectUriClient1}}"
+						},
+						{
+							"key": "codeChallenge",
+							"value": "xhrMObY-MOMInTN9GTR1HdzdQskQMJeU8CwxaTL0nA8"
+						}
+					]
+				},
+				"description": "Returns User info for the authenticated user"
+			},
+			"response": []
+		},
+		{
+			"name": "Exchange Code for Tokens",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Set Refresh Token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"refreshToken\", jsonData.data.authentication.refreshToken);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n    \"grantType\": \"authorization_code\",\n    \"clientId\": \"{{clientId1}}\",    \n    \"redirectUri\": \"{{redirectUriClient1}}\",\n    \"code\": \"{{code}}\",\n    \"codeVerifier\":\"utki3vQExiDuyXciGO1ww2mjJL3s0jWU5CNfUIa8rYiOACqVApLb1XPkLsIsrht5ekGYkAMCvEV6zWVKAenwfPgnFrTdRytsMaErKoZ8SU4Cs1gd1aASe2Z3oYAchARJ\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/auth/client/token",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"auth",
+						"client",
+						"token"
+					]
+				},
+				"description": "Changes the password for the currently authenticated user"
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh Client Tokens",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"grantType\": \"refresh_token\",\n    \"clientId\": \"{{clientId1}}\",    \n    \"refreshToken\": \"{{refreshToken}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/auth/client/token",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"auth",
+						"client",
+						"token"
+					]
+				},
+				"description": "Changes the password for the currently authenticated user"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "code",
+			"value": ""
+		}
+	]
+}
