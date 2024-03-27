@@ -5,7 +5,7 @@ module.exports = {
     "jest-dynalite-config.js"
   ],
   verbose: true,
-  testRegex: '.*\\.test\\.(ts)$',
+  testRegex: '.*\\.test\\.ts$',
   transform: {
     "^.+\\.(t|j)s?$": ["babel-jest", {
       presets: [

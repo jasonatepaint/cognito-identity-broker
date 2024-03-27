@@ -17,5 +17,5 @@
     "target": "es2022"
   },
   "include": ["src", "tests"],
-  "exclude": ["dist", "deploy"]
+  "exclude": ["dist", "scripts"]
 }
