@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import {oAuthTokenCollection} from "../models/login";
 
-const bufferToString = (buffer): string => {
+const bufferToString = (buffer: Uint8Array): string => {
     const CHARSET =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const state: string[] = [];

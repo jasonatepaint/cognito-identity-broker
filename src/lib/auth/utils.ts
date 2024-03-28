@@ -1,4 +1,4 @@
-import {AuthConstants} from "./index";
+import {AuthConstants} from "./consts";
 import {
 	FailedLoginResponse,
 	LoginResponse,
@@ -12,7 +12,7 @@ export const buildLoginResponse = <T extends LoginResponse>(success: boolean, re
 	};
 };
 
-export const buildFailedOAuth2AuthorizeResponse = (reason, clientId, redirectUri, state) : FailedLoginResponse => {
+export const buildFailedOAuth2AuthorizeResponse = (reason: string, clientId: string, redirectUri: string | undefined, state: string | undefined) : FailedLoginResponse => {
 	return <FailedLoginResponse>buildLoginResponse(false, AuthConstants.LoginResults.CodeFlowInitiated, {
 		redirectUri: `?clientId=${clientId}&redirectUri=${redirectUri}${insertStateIfAny(state)}&forceAuth=true&error=${reason}`,
 		state,
@@ -21,7 +21,7 @@ export const buildFailedOAuth2AuthorizeResponse = (reason, clientId, redirectUri
 };
 
 
-export const insertStateIfAny = (state) => {
+export const insertStateIfAny = (state: string | undefined) => {
 	let stateQueryString = "";
 	if (state !== null && state !== undefined) {
 		stateQueryString = "&state=" + state;

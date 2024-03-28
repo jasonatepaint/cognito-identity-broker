@@ -72,9 +72,6 @@ export class CognitoClient {
 		}));
 	}
 
-	/**
-	 * Uses the internal clientId instead of the clientType parameter
-	 */
 	async respondToAuthChallenge(challengeName: string, challengeResponses, clientId: string, session) : Promise<AdminRespondToAuthChallengeCommandOutput> {
 		return this.client.send(new AdminRespondToAuthChallengeCommand(<AdminRespondToAuthChallengeCommandInput>{
 			UserPoolId: this.userPoolId,
@@ -97,7 +94,7 @@ export class CognitoClient {
 		try {
 			const params = {
 				ClientId: clientId,
-				UserPoolId:this.userPoolId
+				UserPoolId: this.userPoolId
 			};
 
 			const data = await this.client.send(new DescribeUserPoolClientCommand(params));

@@ -52,7 +52,7 @@ export const getCredentialsFromGrant = async (code: string, clientId: string, re
 		}
 	}
 
-	let credentials;
+	let credentials: oAuthTokenCollection;
 	try {
 		//Our DynamoDb table is configured for a TTL. The TTL is longer than the code expiration.
 		//This allows for a diagnostic period of time, where the system is aware of a grant even if it's expired
@@ -74,7 +74,7 @@ export const getCredentialsFromGrant = async (code: string, clientId: string, re
 				tokenType
 			};
 		} catch (e) {
-			throw new Error("Invalid Grant");
+			throw new Error(`Invalid Grant: ${e.message}`);
 		}
 	} finally {
 		// Clear out the grant immediately
@@ -88,13 +88,13 @@ export const getCredentialsFromGrant = async (code: string, clientId: string, re
 	return credentials;
 }
 
-const base64URLEncode = (str) => {
-	return str.toString('base64')
+const base64URLEncode = (buffer: Uint8Array) => {
+	return Buffer.from(buffer).toString('base64')
 		.replace(/\+/g, '-')
 		.replace(/\//g, '_')
 		.replace(/=/g, '');
 }
 
-const sha256 = (buffer) => {
-	return crypto.createHash('sha256').update(buffer).digest();
+const sha256 = (str: string) : Uint8Array => {
+	return crypto.createHash('sha256').update(str).digest();
 }

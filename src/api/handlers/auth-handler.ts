@@ -2,18 +2,9 @@ import {APIGatewayProxyEvent, Context} from "aws-lambda";
 import {AuthService} from "../../lib/auth/authService";
 import cookie from "cookie";
 import {handleRequest, HandleRequestOptions, HttpContext} from "../../lib/http";
-import {LoginParameters, oAuthTokenCollection} from "../../lib/models/login";
+import {LoginParameters, oAuth2AuthorizeParameters, oAuthTokenCollection} from "../../lib/models/login";
 import {formatTokenResponse} from "../../lib/cognito/utils";
-
-const getObjectFromRequest = (event: APIGatewayProxyEvent) => {
-    try {
-        return JSON.parse(<string>event.body);
-    } catch (e) {
-        /* istanbul ignore next */
-        return {};
-    }
-};
-
+import { getObjectFromRequest } from "../../lib/http/utils";
 
 export const login = async (event: APIGatewayProxyEvent, context: Context) => {
     console.log("EVENT", event);
@@ -29,7 +20,7 @@ export const clientOAuth2Authorize = async (event: APIGatewayProxyEvent, context
     const ctx = new HttpContext(event, context);
     const fn = async () => {
         const svc = new AuthService();
-        const result = await svc.authorizeClient(<any>{
+        const result = await svc.authorizeClient(<oAuth2AuthorizeParameters>{
             ...event.queryStringParameters,
             cookies: cookie.parse(event.headers.cookie || event.headers.Cookie || "")
         });

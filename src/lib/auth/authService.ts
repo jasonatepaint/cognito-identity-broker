@@ -67,6 +67,7 @@ export class AuthService {
 			console.error(e);
 			let message = `Failed to authorize for client: ${clientId}`;
 			if (e instanceof UserLambdaValidationException) {
+				//If we get here, the cognito trigger function is failing...
 				message = e.message;
 			}
 			return failedResponse(message);

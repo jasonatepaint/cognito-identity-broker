@@ -1,4 +1,4 @@
-import {oAuthTokenCollection} from "../models/login"
+import {oAuthTokenCollection} from "./login"
 
 export interface CodeGrant extends oAuthTokenCollection {
 	code: string;
