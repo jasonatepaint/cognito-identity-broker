@@ -35,11 +35,7 @@ provider:
   region: ${self:custom.region}
   stage: ${self:custom.stage}
   stackName: ${self:service}
-#  tags:
-#    "git:branch": ${git:branch}
-#    "git:tag": ${git:tags}
-#    "git:sha": ${git:sha1}
-  timeout: 28
+  timeout: 5
   tracing:
     lambda: true
 
@@ -47,7 +43,6 @@ package:
   individually: true
 
 plugins:
-  - serverless-plugin-git-variables
   - serverless-functions-base-path
   - serverless-esbuild
   - serverless-deployment-bucket
@@ -71,7 +66,6 @@ custom:
     name: "serverless-deploy-${self:custom.stage}-${self:custom.region}"
   esbuild:
     config: './esbuild.config.js'
-  exportGitVariables: false
   functionsBasePath: src/api/handlers
   profile: ${opt:profile, "deploy.${self:custom.stage}"}
   prune:

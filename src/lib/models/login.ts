@@ -42,25 +42,7 @@ export interface oAuthTokenCollection {
 	tokenType: string;
 }
 
-
-/**
- * @param {string} type - The type of challenge the user is responding to
- */
-export interface AuthChallengeResponse {
-	type: string;
-}
-
-export interface AuthChallengeResponseParameters {
-	required: string[];
-}
-
-export interface AuthChallengeParameters {
-	username: string;
-	uid: string;
-	session?: string;
-}
-
-export interface CodeFlowResponse extends LoginResponse{
+export interface CodeFlowResponse extends LoginResponse {
 	redirectUri: string;
 	code: string;
 	state?: string;
@@ -95,10 +77,4 @@ export interface FailedLoginResponse extends LoginResponse {
 	redirectUri: string;
 	state: string;
 	error: string;
-}
-
-export interface ChallengeLoginResponse extends LoginResponse {
-	parameters: AuthChallengeResponseParameters;
-	challenge: AuthChallengeParameters;
-	response: AuthChallengeResponse;
 }
