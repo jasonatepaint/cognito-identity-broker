@@ -1,0 +1,42 @@
+name: CI
+'on':
+  push:
+    branches:
+      - master
+      - beta
+      - '[0-9].[0-9x].x'
+    paths-ignore:
+      - README.md
+      - .husky/*
+      - .idea/*
+      - .vscode/*
+  pull_request: null
+  workflow_dispatch: null
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          token: ${{ secrets.DEVOPS_TOKEN }}
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install NPM Dependencies
+        run: npm ci --verbose
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+      - name: Run Tests
+        run: npm test -- --coverage --maxWorkers=${{ steps.cpu-cores.outputs.count }}
+      - name: Serverless Packaging Test
+        run: npx sls package
