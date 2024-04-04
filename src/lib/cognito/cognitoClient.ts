@@ -72,7 +72,7 @@ export class CognitoClient {
 		}));
 	}
 
-	async respondToAuthChallenge(challengeName: string, challengeResponses, clientId: string, session) : Promise<AdminRespondToAuthChallengeCommandOutput> {
+	async respondToAuthChallenge(challengeName: string, challengeResponses: Record<string, string>, clientId: string, session?: string) : Promise<AdminRespondToAuthChallengeCommandOutput> {
 		return this.client.send(new AdminRespondToAuthChallengeCommand(<AdminRespondToAuthChallengeCommandInput>{
 			UserPoolId: this.userPoolId,
 			ClientId: clientId,

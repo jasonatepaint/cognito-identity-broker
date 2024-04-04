@@ -6,11 +6,13 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import { mockClient } from "aws-sdk-client-mock";
 
-let client: CognitoClient;
 const username = "email@email.com";
 const userPoolId = "us-east-1_12345";
 const clientId = "123456";
 const cognitoIdpClientMock = mockClient(CognitoIdentityProviderClient);
+
+let accessToken: string;
+let client: CognitoClient;
 
 const getMockAwsClientCommandParams = (mockClient, command, commandIndex = 0, argIndex = 0) => {
 	return mockClient.commandCalls(command)[commandIndex].args[argIndex].input;
@@ -23,8 +25,7 @@ beforeEach(() => {
 });
 
 describe('Get User from Token', () => {
-	let cognitoUser;
-	let accessToken;
+	let cognitoUser: any;
 
 	beforeEach(() => {
 		accessToken = "xxxxyyyyy";
@@ -65,8 +66,7 @@ describe('User Login', () => {
 });
 
 describe('Initiate Custom Auth', () => {
-	let accessToken;
-	let initiateAuthResult;
+	let initiateAuthResult: any;
 	beforeEach(() => {
 		accessToken = "xxxxxxyyyy";
 		initiateAuthResult = {
@@ -120,8 +120,8 @@ describe('Refresh Token', () => {
 });
 
 describe('Respond to Auth Challenge', () => {
+	let challengeResponse: any;
 
-	let challengeResponse
 	beforeEach(() => {
 		challengeResponse = {
 			USERNAME: username,
@@ -130,9 +130,6 @@ describe('Respond to Auth Challenge', () => {
 	})
 
 	test('as expected', async() => {
-		const contextData = {
-			headers: {}
-		};
 		await client.respondToAuthChallenge("CUSTOM_CHALLENGE", challengeResponse, clientId, "session");
 
 		//Cognito called
@@ -147,8 +144,8 @@ describe('Respond to Auth Challenge', () => {
 });
 
 describe('Verify Client', () => {
+	let clientResponse: any;
 
-	let clientResponse;
 	const uri = "https://some.domain.com/auth";
 	beforeEach(() => {
 		clientResponse = {
@@ -173,7 +170,7 @@ describe('Verify Client', () => {
 		expect(r.valid).toBeFalsy();
 		expect(r.message).toEqual("Invalid RedirectUri for Client")
 
-		r = await client.verifyClient(clientId, "http://domain.com");
+		r = await client.verifyClient(clientId, "https://domain.com");
 		expect(r.valid).toBeFalsy();
 		expect(r.message).toEqual("Invalid RedirectUri for Client")
 	});

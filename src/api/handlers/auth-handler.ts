@@ -1,8 +1,8 @@
 import {APIGatewayProxyEvent, Context} from "aws-lambda";
 import {AuthService} from "../../lib/auth/authService";
-import cookie from "cookie";
+import cookie, {CookieSerializeOptions} from "cookie";
 import {handleRequest, HandleRequestOptions, HttpContext} from "../../lib/http";
-import {LoginParameters, oAuth2AuthorizeParameters, oAuthTokenCollection} from "../../lib/models/login";
+import {LoginParameters, oAuth2AuthorizeParameters, oAuthTokenCollection} from "../../lib/models/authentication";
 import {formatTokenResponse} from "../../lib/cognito/utils";
 import { getObjectFromRequest } from "../../lib/http/utils";
 
@@ -48,7 +48,7 @@ export const clientOAuth2Token = async (event: APIGatewayProxyEvent, context: Co
 export const buildAuthCookiesHeader = (auth: oAuthTokenCollection, event: APIGatewayProxyEvent) => {
     const tokens = formatTokenResponse(auth);
     const isLocal = event.headers?.Host?.startsWith("localhost");
-    const options = {
+    const options = <CookieSerializeOptions>{
         maxAge: tokens.expiresIn,
         httpOnly: false,
         path: "/",
