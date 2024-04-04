@@ -1,7 +1,6 @@
-
 export interface oAuth2ClientParameters {
-	clientId: string;
-	redirectUri?: string;
+    clientId: string;
+    redirectUri?: string;
 }
 
 /**
@@ -13,10 +12,10 @@ export interface oAuth2ClientParameters {
  * @property [cookies] - The Cookie Jar (parsed from the Lambda Event headers)
  */
 export interface oAuth2AuthorizeParameters extends oAuth2ClientParameters {
-	provider: string;
-	state?: string
-	codeChallenge?: string;
-	cookies?: { [key: string]: string }
+    provider: string;
+    state?: string;
+    codeChallenge?: string;
+    cookies?: { [key: string]: string };
 }
 
 /**
@@ -28,53 +27,53 @@ export interface oAuth2AuthorizeParameters extends oAuth2ClientParameters {
  * @property [refreshToken] - (grantType: refresh_token) - A valid refresh token to create new id/access tokens
  */
 export interface oAuth2TokenParameters extends oAuth2ClientParameters {
-	grantType: string;
-	code: string;
-	codeVerifier?: string;
-	refreshToken?: string;
+    grantType: string;
+    code: string;
+    codeVerifier?: string;
+    refreshToken?: string;
 }
 
 export interface oAuthTokenCollection {
-	accessToken: string;
-	idToken: string;
-	refreshToken: string;
-	expiresIn: number;
-	tokenType: string;
+    accessToken: string;
+    idToken: string;
+    refreshToken: string;
+    expiresIn: number;
+    tokenType: string;
 }
 
 export interface CodeFlowResponse extends LoginResponse {
-	redirectUri: string;
-	code: string;
-	state?: string;
-	sessionExpires: string;
+    redirectUri: string;
+    code: string;
+    state?: string;
+    sessionExpires: string;
 }
 
 export interface CodeFlowLoginResponse {
-	data: CodeFlowResponse
-	cookies: object[]
+    data: CodeFlowResponse;
+    cookies: object[];
 }
 
 export interface oAuth2ClientParameters {
-	clientType: string;
-	redirectUri?: string;
+    clientType: string;
+    redirectUri?: string;
 }
 
 export interface LoginParameters {
-	username: string;
-	password: string;
+    username: string;
+    password: string;
 }
 
 export interface LoginResponse {
-	success: boolean;
-	result: string;
+    success: boolean;
+    result: string;
 }
 
 export interface UserLoginResponse extends LoginResponse {
-	authentication: oAuthTokenCollection;
+    authentication: oAuthTokenCollection;
 }
 
 export interface FailedLoginResponse extends LoginResponse {
-	redirectUri: string;
-	state: string;
-	error: string;
+    redirectUri: string;
+    state: string;
+    error: string;
 }

@@ -1,4 +1,4 @@
-import 'aws-sdk-client-mock-jest';
+import "aws-sdk-client-mock-jest";
 
 jest.setTimeout(1000 * 60);
 

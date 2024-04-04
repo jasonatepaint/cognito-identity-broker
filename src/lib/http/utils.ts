@@ -1,4 +1,4 @@
-import {APIGatewayProxyEvent} from "aws-lambda";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
 export const getObjectFromRequest = (event: APIGatewayProxyEvent) => {
     try {

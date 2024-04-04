@@ -9,7 +9,6 @@ module.exports = {
     "node": true,
     "jest": true
   },
-  //"parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module"
@@ -40,11 +39,10 @@ module.exports = {
   },
   "overrides": [
     {
-      "extends": ["plugin:@typescript-eslint/recommended"],
+      "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
       "files": ["**/*.ts"],
       "parser": "@typescript-eslint/parser",
       "rules": {
-        "@typescript-eslint/no-extra-semi": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/ban-ts-comment": "off",

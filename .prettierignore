@@ -1,0 +1,8 @@
+dist
+coverage
+postman
+scripts
+*.js
+*.json
+*.yml
+README.md

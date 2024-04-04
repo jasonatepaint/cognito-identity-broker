@@ -1,5 +1,3 @@
 import { AuthConstants } from "./consts";
 
-export {
-    AuthConstants
-};
+export { AuthConstants };

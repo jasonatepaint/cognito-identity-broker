@@ -6,11 +6,11 @@ export const AuthConstants = {
     },
     ClientGrantTypes: {
         Code: "authorization_code",
-        Refresh: "refresh_token"
-    }
+        Refresh: "refresh_token",
+    },
 };
 
 export const GRANT_CONSTANTS = {
     TTL_MINUTES: 15,
-    EXPIRED_CODE_MINUTES: 5
+    EXPIRED_CODE_MINUTES: 5,
 };

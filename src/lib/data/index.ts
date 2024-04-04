@@ -1,5 +1,3 @@
 import { DataService } from "./dataService";
 
-export {
-    DataService
-}
+export { DataService };
