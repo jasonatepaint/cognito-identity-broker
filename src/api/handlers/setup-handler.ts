@@ -1,8 +1,10 @@
 import {generateChallenge, generateRandom} from "../../lib/cognito/utils";
 import {
     AdminCreateUserCommand,
-    AdminCreateUserCommandInput, AdminGetUserCommand,
-    AdminSetUserPasswordCommand, CognitoIdentityProviderClient
+    AdminCreateUserCommandInput,
+    AdminGetUserCommand,
+    AdminSetUserPasswordCommand,
+    CognitoIdentityProviderClient
 } from "@aws-sdk/client-cognito-identity-provider";
 import {CloudFormationClient, DescribeStacksCommand} from "@aws-sdk/client-cloudformation";
 

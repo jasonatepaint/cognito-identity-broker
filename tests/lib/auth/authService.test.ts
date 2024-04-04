@@ -3,13 +3,13 @@ import {
 } from "../../../src/lib/cognito";
 import { formatTokenResponse } from "../../../src/lib/cognito/utils";
 import {AuthService} from "../../../src/lib/auth/authService";
-import {DescribeUserPoolClientCommand, UserLambdaValidationException} from "@aws-sdk/client-cognito-identity-provider";
+import { UserLambdaValidationException } from "@aws-sdk/client-cognito-identity-provider";
 import {setGrant, getCredentialsFromGrant} from "../../../src/lib/auth/grants";
 import jwt_decode from "jwt-decode";
 import {
 	buildFailedOAuth2AuthorizeResponse,
 } from "../../../src/lib/auth/utils";
-import {CodeFlowResponse} from "../../../src/lib/models/login";
+import {CodeFlowResponse} from "../../../src/lib/models/authentication";
 import {AuthConstants} from "../../../src/lib/auth";
 
 jest.mock("../../../src/lib/auth/grants");
@@ -101,9 +101,9 @@ describe('Authorize Client', () => {
 		expect(CognitoClient.prototype.initiateCustomAuth).toHaveBeenCalledWith(clientId, username, accessToken);
 
 		//set grant called
+		const credentials = formatTokenResponse(successfulLoginResult.AuthenticationResult);
 		expect(setGrant).toHaveBeenCalledTimes(1);
-		expect(setGrant).toHaveBeenCalledWith(clientId, redirectUri, codeChallenge,
-			formatTokenResponse(successfulLoginResult.AuthenticationResult));
+		expect(setGrant).toHaveBeenCalledWith(clientId, redirectUri, credentials, codeChallenge);
 	});
 
 	test('missing clientId', async () => {

@@ -2,10 +2,10 @@ import { DataService } from "../data";
 import {dayjs} from "../utils/dayjs";
 import { encryptToken, decryptToken } from "../utils/crypto";
 import crypto from "crypto";
-import {oAuthTokenCollection} from "../models/login";
+import {oAuthTokenCollection} from "../models/authentication";
 import { GRANT_CONSTANTS } from "./consts";
 
-export const setGrant = async (clientId: string, redirectUri: string, codeChallenge: string | undefined = undefined, credentials: oAuthTokenCollection) => {
+export const setGrant = async (clientId: string, redirectUri: string, credentials: oAuthTokenCollection, codeChallenge?: string) => {
 	if (!clientId || !redirectUri || !credentials) {
 		throw new Error("Missing user credentials")
 	}
@@ -26,7 +26,7 @@ export const setGrant = async (clientId: string, redirectUri: string, codeChalle
 /***
  * Gets stored credentials grant with an id (code)
  */
-export const getCredentialsFromGrant = async (code: string, clientId: string, redirectUri: string | undefined = undefined, codeVerifier: string | undefined = undefined) => {
+export const getCredentialsFromGrant = async (code: string, clientId: string, redirectUri?: string, codeVerifier?: string) => {
 	const dataService = new DataService();
 	if (!code || code.length === 0) {
 		throw new Error("Missing authorization code");

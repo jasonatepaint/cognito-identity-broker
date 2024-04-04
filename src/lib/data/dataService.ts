@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {CodeGrant} from "../models/codeGrant";
-import {oAuthTokenCollection} from "../models/login";
+import {oAuthTokenCollection} from "../models/authentication";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
 	DynamoDBDocumentClient,

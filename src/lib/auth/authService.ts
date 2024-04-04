@@ -10,12 +10,12 @@ import {
 	CodeFlowResponse,
 	oAuth2AuthorizeParameters,
 	oAuth2TokenParameters,
-} from "../models/login";
+} from "../models/authentication";
 import {
 	FailedLoginResponse,
 	LoginParameters,
 	UserLoginResponse,
-} from "../models/login";
+} from "../models/authentication";
 import {CognitoClient} from "../cognito";
 import {AuthConstants} from "./index";
 import {formatTokenResponse} from "../cognito/utils";
@@ -56,7 +56,7 @@ export class AuthService {
 			const username = tokenDecoded['username'];
 			const result= await this.cognito.initiateCustomAuth(clientId, username, cookies.accessToken);
 			const credentials = formatTokenResponse(result.AuthenticationResult);
-			const grant = await setGrant(clientId, redirectUri, codeChallenge, credentials);
+			const grant = await setGrant(clientId, redirectUri, credentials, codeChallenge);
 			const code = grant.code;
 			return buildLoginResponse<CodeFlowResponse>(true, AuthConstants.LoginResults.CodeFlowInitiated, {
 				code,

@@ -2,7 +2,7 @@ import {AuthConstants} from "./consts";
 import {
 	FailedLoginResponse,
 	LoginResponse,
-} from "../models/login";
+} from "../models/authentication";
 
 export const buildLoginResponse = <T extends LoginResponse>(success: boolean, result: string, metaData = {}) : T => {
 	return <T>{

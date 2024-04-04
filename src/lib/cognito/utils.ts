@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import {oAuthTokenCollection} from "../models/login";
+import {oAuthTokenCollection} from "../models/authentication";
 
 const bufferToString = (buffer: Uint8Array): string => {
     const CHARSET =

@@ -5,7 +5,7 @@ import {ttlFromMinutes, dayjs} from "../../../src/lib/utils/dayjs";
 import {generateChallenge, generateRandom} from "../../../src/lib/cognito/utils";
 import { encryptToken, decryptToken } from "../../../src/lib/utils/crypto";
 import {CodeGrant} from "../../../src/lib/models/codeGrant";
-import {oAuthTokenCollection} from "../../../src/lib/models/login";
+import {oAuthTokenCollection} from "../../../src/lib/models/authentication";
 
 jest.mock("../../../src/lib/utils/crypto");
 
@@ -50,7 +50,7 @@ beforeEach(() => {
 describe('Set Grant', () => {
 
 	test('as expected', async () => {
-		const grant = await setGrant(clientId, redirectUri, codeChallenge, credentials);
+		const grant = await setGrant(clientId, redirectUri, credentials, codeChallenge);
 		const dbGrant = <CodeGrant>await dataService.getGrant(grant.code);
 		expect(dbGrant.clientId).toEqual(clientId);
 		expect(dbGrant.redirectUri).toEqual(redirectUri);
@@ -69,16 +69,16 @@ describe('Set Grant', () => {
 	});
 
 	test('missing attributes', async () => {
-		await expect(setGrant(<any>undefined, redirectUri, codeChallenge, credentials)).rejects.toThrowError();
-		await expect(setGrant(clientId, <any>undefined, codeChallenge, credentials)).rejects.toThrowError();
-		await expect(setGrant(clientId, redirectUri, codeChallenge, <any>undefined)).rejects.toThrowError();
+		await expect(setGrant(<any>undefined, redirectUri, credentials, codeChallenge)).rejects.toThrowError();
+		await expect(setGrant(clientId, <any>undefined, credentials, codeChallenge)).rejects.toThrowError();
+		await expect(setGrant(clientId, redirectUri, <any>undefined, codeChallenge)).rejects.toThrowError();
 	});
 });
 
 describe('Get Credentials from Grant', () => {
-	let grant, code;
+	let grant: CodeGrant, code: string;
 	beforeEach(async function () {
-		grant = await setGrant(clientId, redirectUri, codeChallenge, credentials);
+		grant = await setGrant(clientId, redirectUri, credentials, codeChallenge);
 		code = grant.code;
 	});
 

@@ -1,7 +1,6 @@
 import {AuthConstants} from "../../../src/lib/auth";
 import {
 	buildLoginResponse,
-	buildFailedOAuth2AuthorizeResponse,
 	insertStateIfAny,
 } from "../../../src/lib/auth/utils";
 
@@ -18,7 +17,7 @@ describe('Authentication Utils', () => {
 	});
 
 	test('insert state if any', async () => {
-		expect(insertStateIfAny(null)).toEqual("");
+		expect(insertStateIfAny(<any>null)).toEqual("");
 		expect(insertStateIfAny(undefined)).toEqual("");
 
 		const state = "123124323423";

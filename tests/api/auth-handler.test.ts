@@ -7,7 +7,7 @@ import {
 	buildAuthCookiesHeader
 } from "../../src/api/handlers/auth-handler";
 import cookie from "cookie";
-import {oAuthTokenCollection} from "../../src/lib/models/login";
+import {oAuthTokenCollection} from "../../src/lib/models/authentication";
 
 jest.mock("../../src/lib/auth/authService");
 
