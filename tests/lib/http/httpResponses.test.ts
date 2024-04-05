@@ -25,6 +25,47 @@ beforeEach(() => {
 });
 
 describe("Http Response", function () {
+    describe('JSON Stringify Data', () => {
+        test('Removes Null values', async () => {
+            const data = {
+                snuh: "buh",
+                buh: null,
+                items: [ "1", null, "3" ],
+                stuff: {
+                    name: "name",
+                    age: null,
+                    map: {
+                        value: "stuff",
+                        type: null
+                    }
+                }
+            };
+            const result = buildHttpResponse(ctx, 200, data);
+            const r = JSON.parse(result.body);
+            expect(r.data).toEqual({
+                snuh: "buh",
+                items: [ "1", "3" ],
+                stuff: {
+                    name: "name",
+                    map: {
+                        value: "stuff"
+                    }
+                }
+            });
+        });
+
+        test('converts bigint to string', async () => {
+            const data = {
+                biggie: BigInt("12345")
+            };
+            const result = buildHttpResponse(ctx, 200, data);
+            const r = JSON.parse(result.body);
+            expect(r.data).toEqual({
+                biggie: "12345"
+            });
+        });
+    });
+
     test("response with explicit statusCode", () => {
         const data = { snuh: "buh" };
         const result = buildHttpResponse(ctx, 302, data);

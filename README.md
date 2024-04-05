@@ -231,6 +231,13 @@ This allows the consumer client application to request new `id` and `access` tok
 
 ---
 
+### Running Tests
+This project has a suite of unit tests that can be run with:
+```shell
+npm run test
+```
+---
+
 #### Project Notes:
 * This example uses a `username/password` approach for login. This is to keep this example focused on the broker concept. The preferred approach would be using **SRP** [(Secure Remote Password)](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html#Using-SRP-password-verification-in-custom-authentication-flow).
 * To remove the entire stack, run the following command:

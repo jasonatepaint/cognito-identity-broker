@@ -3,17 +3,15 @@ import { DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 
 export const buildDynamoDbOptions = () => {
     const region = process.env.AWS_DEFAULT_REGION;
-    let options: DynamoDBClientConfig = {};
-    if (region) {
-        options.region = region;
-    }
+    let options: DynamoDBClientConfig = {
+        region
+    };
+
     // connect to local DB if running offline
     if (process.env.STAGE === "local") {
         //required for dynamodb-local
-        if (!process.env.AWS_ACCESS_KEY_ID)
-            process.env.AWS_ACCESS_KEY_ID = "fake_access_id";
-        if (!process.env.AWS_SECRET_ACCESS_KEY)
-            process.env.AWS_SECRET_ACCESS_KEY = "fake_access_key";
+        process.env.AWS_ACCESS_KEY_ID = "fake_access_id";
+        process.env.AWS_SECRET_ACCESS_KEY = "fake_access_key";
 
         options = {
             endpoint: "http://localhost:8000",

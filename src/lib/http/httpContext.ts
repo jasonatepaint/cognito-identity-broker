@@ -14,6 +14,7 @@ export class HttpContext {
     }
 
     static get timeout() {
+        /* istanbul ignore next */
         return 5000;
     }
 

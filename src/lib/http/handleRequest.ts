@@ -5,13 +5,13 @@ import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 export const RequestTimeoutBufferMs = 250;
 
 export type ResponseBuilder = (
-    ctx: any,
+    ctx: HttpContext,
     successStatusCode: number,
     data: any,
     headers: any,
 ) => any;
 
-export type ResponseFromExceptionBuilder = (ctx: any, error: any) => any;
+export type ResponseFromExceptionBuilder = (ctx: HttpContext, error: any) => any;
 
 export interface HandleRequestOptions {
     /* The Http status code to return for successful calls */

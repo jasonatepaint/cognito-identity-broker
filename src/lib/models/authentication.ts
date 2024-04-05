@@ -48,11 +48,6 @@ export interface CodeFlowResponse extends LoginResponse {
     sessionExpires: string;
 }
 
-export interface CodeFlowLoginResponse {
-    data: CodeFlowResponse;
-    cookies: object[];
-}
-
 export interface oAuth2ClientParameters {
     clientType: string;
     redirectUri?: string;

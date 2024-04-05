@@ -21,6 +21,14 @@ describe("Grants Data Service", () => {
         redirectUri = "https://domain.com";
     });
 
+    test('get with missing params', async () => {
+        await expect(svc.getWithParams(<any>undefined)).rejects.toThrowError();
+    });
+
+    test('delete with missing key', async () => {
+        await expect(svc.delete(<any>undefined)).rejects.toThrowError();
+    });
+
     test("set grant", async () => {
         const dateTime = new Date();
         jest.useFakeTimers().setSystemTime(dateTime.getTime());

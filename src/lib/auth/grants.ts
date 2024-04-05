@@ -1,7 +1,7 @@
 import { DataService } from "../data";
 import { dayjs } from "../utils/dayjs";
-import { encryptToken, decryptToken } from "../utils/crypto";
-import crypto from "crypto";
+import {encryptToken, decryptToken} from "../utils/crypto";
+import { generateChallenge } from "../cognito/utils";
 import { oAuthTokenCollection } from "../models/authentication";
 import { GRANT_CONSTANTS } from "./consts";
 
@@ -62,7 +62,7 @@ export const getCredentialsFromGrant = async (
         if (!codeVerifier) {
             throw new Error("Code verifier is missing");
         }
-        const calculatedCodeChallenge = base64URLEncode(sha256(codeVerifier));
+        const calculatedCodeChallenge = generateChallenge(codeVerifier);
         if (grant.codeChallenge !== calculatedCodeChallenge) {
             throw new Error("Code verifier does not match code challenge");
         }
@@ -70,7 +70,7 @@ export const getCredentialsFromGrant = async (
 
     let credentials: oAuthTokenCollection;
     try {
-        //Our DynamoDb table is configured for a TTL. The TTL is longer than the code expiration.
+        //Our DynamoDb table is configured with a TTL. The TTL is longer than the code expiration.
         //This allows for a diagnostic period of time, where the system is aware of a grant even if it's expired
         const expiresAt = dayjs
             .utc(grant.dt)
@@ -105,16 +105,4 @@ export const getCredentialsFromGrant = async (
         }
     }
     return credentials;
-};
-
-const base64URLEncode = (buffer: Uint8Array) => {
-    return Buffer.from(buffer)
-        .toString("base64")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=/g, "");
-};
-
-const sha256 = (str: string): Uint8Array => {
-    return crypto.createHash("sha256").update(str).digest();
 };

@@ -18,23 +18,20 @@ import {
 } from "./buildDynamoDbOptions";
 import { ttlFromMinutes } from "../utils/dayjs";
 
-let dynamoDbDocClient: DynamoDBDocumentClient;
-
 /**
  * Handles all low-level DynamoDb SDK calls
  */
 export class DataService {
     tableName: string;
+    dynamoDbDocClient: DynamoDBDocumentClient;
 
     constructor() {
         this.tableName = process.env.GRANTS_TABLE || "NOT-SET";
-        if (!dynamoDbDocClient) {
-            const client = new DynamoDBClient(buildDynamoDbOptions());
-            dynamoDbDocClient = DynamoDBDocumentClient.from(
-                client,
-                getDynamoMarshallTranslateConfig(),
-            );
-        }
+        const client = new DynamoDBClient(buildDynamoDbOptions());
+        this.dynamoDbDocClient = DynamoDBDocumentClient.from(
+            client,
+            getDynamoMarshallTranslateConfig(),
+        );
     }
 
     /**
@@ -45,7 +42,7 @@ export class DataService {
         if (!params) {
             throw new Error("Missing params");
         }
-        const result = await dynamoDbDocClient.send(new GetCommand(params));
+        const result = await this.dynamoDbDocClient.send(new GetCommand(params));
         return result.Item ? (result.Item as T) : undefined;
     }
 
@@ -54,14 +51,14 @@ export class DataService {
             TableName: this.tableName,
             Item: item,
         };
-        return await dynamoDbDocClient.send(new PutCommand(params));
+        return await this.dynamoDbDocClient.send(new PutCommand(params));
     }
 
     async delete(key: DeleteCommandInput): Promise<DeleteCommandOutput> {
         if (!key) {
             throw new Error("Missing Key");
         }
-        return await dynamoDbDocClient.send(
+        return await this.dynamoDbDocClient.send(
             new DeleteCommand({
                 TableName: this.tableName,
                 Key: key,

@@ -97,6 +97,9 @@ const jsonStringify = (response: any) => {
     });
 };
 
+/**
+ * Handle non-serializable values
+ */
 const setJsonValue = (value: any) => {
     if (value === null) {
         return undefined;

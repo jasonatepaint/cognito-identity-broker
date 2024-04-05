@@ -30,11 +30,43 @@ export class AuthService {
         this.cognito = new CognitoClient();
     }
 
-    async authorizeClient(
-        parameters: oAuth2AuthorizeParameters,
-    ): Promise<CodeFlowResponse | FailedLoginResponse> {
-        const { clientId, redirectUri, state, codeChallenge, cookies } =
-            parameters;
+    /***
+     * Logs a user in to the SSO Identity Broker using username/password auth flow
+     */
+    async login(clientId: string, parameters: LoginParameters): Promise<UserLoginResponse> {
+        const { username, password } = parameters;
+        if (username === undefined) {
+            throw new Error("missing username");
+        }
+        if (password === undefined) {
+            throw new Error("missing password");
+        }
+
+        const result = await this.cognito.userLogin(
+            clientId,
+            username,
+            password,
+        );
+        const authentication = formatTokenResponse(result.AuthenticationResult);
+        return buildLoginResponse<UserLoginResponse>(
+            true,
+            AuthConstants.LoginResults.LoggedIn,
+            { authentication },
+        );
+    }
+
+    /**
+     * Initiates the code flow process, using the SSO broker's cookie credentials and returning a code which can be
+     * exchanged for client credentials.
+     */
+    async authorizeClient(parameters: oAuth2AuthorizeParameters): Promise<CodeFlowResponse | FailedLoginResponse> {
+        const {
+            clientId,
+            redirectUri,
+            state,
+            codeChallenge,
+            cookies
+        } = parameters;
 
         const failedResponse = (reason: string) => {
             return buildFailedOAuth2AuthorizeResponse(
@@ -103,11 +135,9 @@ export class AuthService {
     }
 
     /***
-     * Generates JWT tokens (id, access, refresh) for a client portal
+     * Exchanges a code for JWT tokens (id, access, refresh) for a client app
      */
-    async getTokensForClient(
-        parameters: oAuth2TokenParameters,
-    ): Promise<UserLoginResponse> {
+    async getTokensForClient(parameters: oAuth2TokenParameters): Promise<UserLoginResponse> {
         const {
             clientId,
             redirectUri,
@@ -141,34 +171,6 @@ export class AuthService {
     }
 
     /***
-     * Logs a user in using username/password auth flow
-     */
-    async login(
-        clientId: string,
-        parameters: LoginParameters,
-    ): Promise<UserLoginResponse> {
-        const { username, password } = parameters;
-        if (username === undefined) {
-            throw new Error("missing username");
-        }
-        if (password === undefined) {
-            throw new Error("missing password");
-        }
-
-        const result = await this.cognito.userLogin(
-            clientId,
-            username,
-            password,
-        );
-        const authentication = formatTokenResponse(result.AuthenticationResult);
-        return buildLoginResponse<UserLoginResponse>(
-            true,
-            AuthConstants.LoginResults.LoggedIn,
-            { authentication },
-        );
-    }
-
-    /***
      * Refreshes a user's authentication using a RefreshToken
      */
     async refreshToken(
@@ -192,14 +194,8 @@ export class AuthService {
      * For this call to be successful, the following must be true:
      * 1) Access Token needs to be valid and non-expired
      * 2) The token's username must match the inbound trigger's event username
-     * @param {string} username
-     * @param {string} accessToken
-     * @return {Promise<boolean>}
      */
-    async verifyAuthChallenge(
-        username: string,
-        accessToken: string,
-    ): Promise<boolean> {
+    async verifyAuthChallenge(username: string, accessToken: string): Promise<boolean> {
         try {
             const userInfo = await this.cognito.getUserFromToken(accessToken);
             return userInfo.Username === username;

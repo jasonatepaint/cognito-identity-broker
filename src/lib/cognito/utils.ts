@@ -22,10 +22,10 @@ export const generateState = (length: number): string => {
     return result;
 };
 
-export const generateChallenge = (code: string): string => {
+export const generateChallenge = (codeVerifier: string): string => {
     return crypto
         .createHash("sha256")
-        .update(code)
+        .update(codeVerifier)
         .digest("base64")
         .replace(/=/g, "")
         .replace(/\+/g, "-")
