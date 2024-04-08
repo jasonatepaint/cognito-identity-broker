@@ -40,7 +40,7 @@ In addition to simplifying and unifying the authentication process, this approac
   
 3. Create a user in your new User Pool
     ```shell
-    npx sls invoke local --function createUser --data '{"name":"User", "email": "user@email.com", "password": "MyPassword1"}'
+    npx sls invoke local --function createUser --data '{"name":"Bob Belcher", "email": "bob@burger.com", "password": "MyPassword1"}'
     ```
 4. Setup Postman collection & environment
   * Import `postman/Cognito Identity.postman_collection.json`
@@ -98,7 +98,7 @@ The postman collection has been setup to populate required variables (`code`, `r
 ```json
 { 
     "clientId": "{{brokerClientId}}", 
-    "username": "user@email.com",
+    "username": "bob@burger.com",
     "password": "MyPassword1"
 }
 ```

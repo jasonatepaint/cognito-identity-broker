@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \n    \"clientId\": \"{{brokerClientId}}\", \n    \"username\": \"user@email.com\",\n    \"password\": \"MyPassword1\"\n}",
+					"raw": "{ \n    \"clientId\": \"{{brokerClientId}}\", \n    \"username\": \"bob@burger.com\",\n    \"password\": \"MyPassword1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
