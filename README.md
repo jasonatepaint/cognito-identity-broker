@@ -8,6 +8,10 @@ In addition to simplifying and unifying the authentication process, this approac
 * Pinpoint analytics per client
 * Enabling advanced security per client
 
+##### Related projects
+* [Cognito Identity Broker Web Applications](https://github.com/jasonatepaint/cognito-identity-broker-web) -- Broker and example client application utilizing this API
+* [Cognito SSO Client](https://github.com/jasonatepaint/cognito-sso-client) -- A client library to facilitate the authorization code flow process for client applications.
+
 ### The Identity Broker Authorization Code Flow Process
 
 ![cognito_identity_broker_diagram.png](docs/cognito_identity_broker_diagram.png)
