@@ -68,6 +68,8 @@ The _Authorization Code Flow_ process is broken into 3 main proceses:
 ### Run the full authentication flow
 The postman collection has been setup to populate required variables (`code`, `refreshToken`) during the auth flow to eliminate the need to copy/paste values. 
 
+**Note:** _As an alternative to using postman, you can use the [Cognito Identity Broker Web Applications](https://github.com/jasonatepaint/cognito-identity-broker-web) to test the entire authentication flow directly from the browser._
+
 
 1. Send the `Login` request. This will:
     * Return the broker credentials (`id, access, refresh` tokens)
