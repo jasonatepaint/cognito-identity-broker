@@ -63,7 +63,7 @@ In addition to simplifying and unifying the authentication process, this approac
 The _Authorization Code Flow_ process is broken into 3 main proceses:
 * User logs in directly with the broker
 * User's broker credentials are used to generate a code grant 
-* User exchanges the code for tokens
+* User exchanges the code for client-level tokens from the client app
 
 ### Run the full authentication flow
 The postman collection has been setup to populate required variables (`code`, `refreshToken`) during the auth flow to eliminate the need to copy/paste values. 
